@@ -1,115 +1,304 @@
-## Student Marks Prediction System using AWS SageMaker, Lambda & API Gateway
+# Student Marks Prediction - End-to-End ML Deployment
 
-## Overview
+## Project Overview
 
-This project demonstrates an end-to-end serverless machine learning deployment on AWS. A Linear Regression model is trained using Amazon SageMaker, deployed as a real-time inference endpoint, and exposed through AWS Lambda and API Gateway. A FastAPI backend communicates with the deployed endpoint, while a simple HTML frontend allows users to submit input values and receive real-time predictions.
+Student Marks Prediction is an end-to-end Machine Learning deployment project that predicts student marks based on input features.
+
+The project covers the complete ML lifecycle including dataset storage, model training, deployment on Amazon SageMaker, API integration using AWS Lambda and API Gateway, API testing, and Docker-based application deployment.
+
+The objective of this project is to build and deploy a production-ready Machine Learning prediction system using AWS cloud services.
 
 ---
 
-## Architecture
+# Architecture Workflow
 
 ```
-HTML Frontend
-       │
-       ▼
-    FastAPI
-       │
-       ▼
- API Gateway
-       │
-       ▼
- AWS Lambda
-       │
-       ▼
- SageMaker Endpoint
-       │
-       ▼
- ML Model (Linear Regression)
+Student Dataset
+       |
+       ↓
+Amazon S3
+       |
+       ↓
+Amazon SageMaker
+       |
+       ↓
+Model Training
+       |
+       ↓
+inference.py
+       |
+       ↓
+SageMaker Endpoint
+       |
+       ↓
+AWS Lambda
+       |
+       ↓
+API Gateway
+       |
+       ↓
+Prediction API URL
+       |
+       ↓
+Postman Testing
+       |
+       ↓
+Docker Frontend + Backend Deployment
 ```
 
 ---
 
-## Project Workflow
+# Project Workflow
 
-1. Created an Amazon S3 bucket to store the dataset and trained model artifacts.
-2. Uploaded the dataset to the S3 bucket.
-3. Trained a Linear Regression model using Amazon SageMaker.
-4. Saved the trained model as `model.joblib`.
-5. Compressed the model into `model.tar.gz`.
-6. Uploaded both model artifacts to the S3 bucket.
-7. Created and deployed a real-time SageMaker Endpoint.
-8. Developed an AWS Lambda function to invoke the SageMaker endpoint.
-9. Connected Lambda with Amazon API Gateway to expose a REST API.
-10. Tested the deployed API successfully using Postman.
-11. Developed a FastAPI backend to communicate with the API Gateway.
-12. Built a simple HTML frontend for user interaction.
-13. Successfully performed end-to-end prediction from the web interface.
+## 1. Dataset Preparation
 
----
+* Created an Amazon S3 bucket for storing project data.
+* Uploaded the student marks dataset into S3.
+* Created a separate `model` folder for storing model-related files and deployment artifacts.
 
-## Technologies Used
+### S3 Folder Structure
 
-* Python
-* HTML, CSS, JavaScript
-* FastAPI
-* AWS S3
-* Amazon SageMaker
-* AWS Lambda
-* Amazon API Gateway
-* Postman
-* Scikit-learn
-* Joblib
-* NumPy
-* Pandas
-* Boto3
+```
+S3 Bucket
+│
+├── dataset/
+│      └── student_marks.csv
+│
+└── model/
+       └── model joblib
+
+```
 
 ---
 
+# 2. Model Training using Amazon SageMaker
 
-## Features
+* Configured Amazon SageMaker environment.
+* Loaded the student marks dataset from Amazon S3.
+* Performed required data preprocessing.
+* Trained the Machine Learning model.
+* Generated the trained model artifact.
 
-* End-to-end machine learning deployment on AWS.
-* Real-time prediction using a SageMaker Endpoint.
-* Serverless architecture with Lambda and API Gateway.
-* FastAPI backend for API integration.
-* Simple HTML frontend for prediction requests.
-* Successfully tested using Postman before frontend integration.
+The trained model was prepared for deployment using SageMaker inference architecture.
 
 ---
 
-## API Request Example
+# 3. SageMaker Model Deployment
+
+After model training, the model was deployed on Amazon SageMaker.
+
+Created an `inference.py` file responsible for handling prediction requests.
+
+### inference.py Responsibilities
+
+* Loading the trained model.
+* Receiving input data from API requests.
+* Performing prediction.
+* Returning model output.
+
+### Inference Flow
+
+```
+Input Data
+     |
+     ↓
+inference.py
+     |
+     ↓
+Trained ML Model
+     |
+     ↓
+Predicted Student Marks
+```
+
+A real-time SageMaker Endpoint was created successfully for serving predictions.
+
+---
+
+# 4. SageMaker Endpoint Creation
+
+* Created SageMaker Model.
+* Configured deployment settings.
+* Created a real-time endpoint.
+* Verified endpoint status after deployment.
+
+The endpoint provides real-time prediction capability for incoming student data.
+
+---
+
+# 5. AWS Lambda Integration
+
+An AWS Lambda function was created to communicate with the SageMaker Endpoint.
+
+Lambda acts as a serverless middleware between API Gateway and SageMaker.
+
+### Request Flow
+
+```
+Client Request
+      |
+      ↓
+API Gateway
+      |
+      ↓
+AWS Lambda
+      |
+      ↓
+SageMaker Endpoint
+      |
+      ↓
+Prediction Response
+```
+
+---
+
+# 6. API Gateway Integration
+
+Amazon API Gateway was configured to expose the ML model as a REST API.
+
+Steps performed:
+
+* Created REST API.
+* Created `/predict` POST endpoint.
+* Connected API Gateway with Lambda.
+* Deployed API stage.
+* Generated public API URL.
+
+Example Endpoint:
+
+```
+POST /predict
+```
+
+---
+
+# 7. API Testing using Postman
+
+The deployed API was tested using Postman.
+
+### Sample Request
 
 ```json
 {
-  "maths": 40,
-  "english": 60
+    "feature_1": "value",
+    "feature_2": "value"
 }
 ```
 
----
-
-## Sample Response
+### Sample Response
 
 ```json
 {
-  "prediction": 52.37
+    "prediction": "Student Predicted Marks"
 }
+```
+
+Postman testing confirmed successful communication between API Gateway, Lambda, and SageMaker Endpoint.
+
+---
+
+# 8. Docker Deployment
+
+After successful API testing, the application was containerized using Docker.
+
+Implemented:
+
+* Dockerized backend application.
+* Connected frontend and backend services.
+* Ran the complete application using Docker containers.
+
+### Docker Architecture
+
+```
+Frontend Container
+        |
+        ↓
+Backend Container
+        |
+        ↓
+API Gateway
+        |
+        ↓
+AWS Lambda
+        |
+        ↓
+SageMaker Endpoint
 ```
 
 ---
 
-## Future Improvements
+# Final System Architecture
 
-* Add user authentication.
-* Implement CI/CD using GitHub Actions.
-* Containerize the application using Docker.
-* Monitor inference logs using Amazon CloudWatch.
-* Deploy the frontend using AWS Amplify or Amazon S3 Static Website Hosting.
+```
+                    User
+                     |
+                     ↓
+                 Frontend
+                     |
+                     ↓
+                 Backend API
+                     |
+                     ↓
+              Amazon API Gateway
+                     |
+                     ↓
+                AWS Lambda
+                     |
+                     ↓
+          Amazon SageMaker Endpoint
+                     |
+                     ↓
+            Student Marks ML Model
+                     |
+                     ↓
+             Predicted Marks Output
+```
+
+
+
+## SageMaker Endpoint
+
+(Add SageMaker endpoint screenshot here)
 
 ---
 
-## Author
+## API Gateway Configuration
 
-**Rakshita Kanwar**
-B.Tech (Computer Science - Artificial Intelligence)
-Arya College of Engineering, Jaipur
+(Add API Gateway screenshot here)
+
+---
+
+## Postman API Testing
+
+(Add successful API response screenshot here)
+
+---
+
+## Docker Deployment
+
+(Add Docker running containers screenshot here)
+
+---
+
+# Key Learnings
+
+* Built an end-to-end Machine Learning deployment pipeline.
+* Learned Amazon SageMaker model deployment.
+* Created real-time ML inference endpoint.
+* Integrated SageMaker with AWS Lambda.
+* Developed REST API using API Gateway.
+* Tested cloud ML APIs using Postman.
+* Containerized applications using Docker.
+* Understood complete ML model production workflow.
+
+---
+
+# Future Improvements
+
+* Add CI/CD pipeline using GitHub Actions.
+* Add model monitoring using Amazon CloudWatch.
+* Implement automated model retraining pipeline.
+* Deploy frontend and backend on cloud infrastructure.
+
+```
+```
